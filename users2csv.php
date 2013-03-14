@@ -29,6 +29,28 @@ class users_export {
     add_users_page( 'Users2Csv', 'Users2Csv', 'list_users', 'Users2Csv', array( $this, 'users_page' ) );
   }
 
+  /** Export months **/
+  private function export_date_options() {
+    global $wpdb, $wp_locale;
+
+    $months = $wpdb->get_results( "
+      SELECT DISTINCT YEAR( user_registered ) AS year, MONTH( user_registered ) AS month
+      FROM $wpdb->users
+      ORDER BY user_registered DESC
+    " );
+
+    $month_count = count( $months );
+    if ( !$month_count || ( 1 == $month_count && 0 == $months[0]->month ) )
+      return;
+
+    foreach ( $months as $date ) {
+      if ( 0 == $date->year )
+        continue;
+
+      $month = zeroise( $date->month, 2 );
+      echo '<option value="' . $date->year . '-' . $month . '">' . $wp_locale->get_month( $month ) . ' ' . $date->year . '</option>';
+    }
+  }
 
   /** Create a list of selectable fields **/
   private function export_fields() {
