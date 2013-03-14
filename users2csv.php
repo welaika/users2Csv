@@ -23,6 +23,12 @@ class users_export {
     add_action( 'init', array( $this, 'generate_csv' ) );
     add_filter( 'u2c_exclude_data', array( $this, 'exclude_data' ) );
   }
+
+  /** Add backend menu voice **/
+  public function add_admin_pages() {
+    add_users_page( 'Users2Csv', 'Users2Csv', 'list_users', 'Users2Csv', array( $this, 'users_page' ) );
+  }
+
 }
 
 new users_export;
