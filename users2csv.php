@@ -13,3 +13,10 @@ Author URI: http://github.com/mukkoo
 License: GPL2
 Text Domain: users-to-csv
 */
+
+/** Main class **/
+class users_export {
+
+}
+
+new users_export;
