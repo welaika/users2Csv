@@ -29,6 +29,48 @@ class users_export {
     add_users_page( 'Users2Csv', 'Users2Csv', 'list_users', 'Users2Csv', array( $this, 'users_page' ) );
   }
 
+  /** Content of the settings page **/
+  public function users_page() {
+    if ( ! current_user_can( 'list_users' ) ) wp_die( 'You do not have sufficient permissions to access this page.');
+    echo '<div class="wrap">';
+      // Header
+      echo '<h1>Export users to a CSV file</h1>';
+      echo '<p>Usage: set options than click to Export button to save csv.</p>';
+      // No user found
+      if ( isset( $_GET['error'] ) ) echo '<div class="updated"><p><strong> No user found. </strong></p></div>';
+      if ( isset( $_GET['error'] ) && ($_GET['error'] == 'month') ) echo '<div class="updated"><p><strong> The start date must be earlier than end date. </strong></p></div>';
+      echo '<form method="post" action="" enctype="multipart/form-data">';
+        echo '<h3>Filter selection</h3>';
+        wp_nonce_field( 'export-users-page_export', '_wpnonce-export-users-page_export' ); 
+        // Role select
+        echo '<strong>Role: </strong>';
+        echo '<select name="role" id="u2c_users_role">';
+          echo '<option value=""> Every Role </option>';
+          global $wp_roles;
+          foreach ( $wp_roles->role_names as $role => $name ) {
+            echo "\n\t<option value='" . esc_attr( $role ) . "'>$name</option>";
+          }
+        echo '</select>';
+        // Date range select
+        echo '<br /><strong>Date range: </strong>';
+        // Start month
+        echo '<select name="start_month" id="u2c_users_start_month">';
+          echo '<option value="0">Start month</option>';
+          $this->export_date_options();
+        echo '</select>';
+        // End month
+        echo '<select name="end_month" id="u2c_users_end_month">';
+          echo '<option value="0">End Month</option>';
+          $this->export_date_options();
+        echo '</select>';
+        echo '<h3>Select fields to export</h3>';
+        echo $this->export_fields();
+        // Submit
+        echo '<input type="hidden" name="_wp_http_referer" value="'. $_SERVER['REQUEST_URI'] .'" />';
+        echo '<br /><input type="submit" class="button-primary" value="Export" />';
+      echo '</form>';
+    echo '</div>';
+  }
 
   public function exclude_data() {
     $exclude = array( 'user_pass', 'user_activation_key' );
