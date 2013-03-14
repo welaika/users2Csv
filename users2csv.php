@@ -17,6 +17,12 @@ Text Domain: users-to-csv
 /** Main class **/
 class users_export {
 
+  /** Add actions and filters **/
+  public function __construct() {
+    add_action( 'admin_menu', array( $this, 'add_admin_pages' ) );
+    add_action( 'init', array( $this, 'generate_csv' ) );
+    add_filter( 'u2c_exclude_data', array( $this, 'exclude_data' ) );
+  }
 }
 
 new users_export;
