@@ -77,6 +77,30 @@ class users_export {
 
     return $exclude;
   }
+
+  public function pre_user_query( $user_search ) {
+    global $wpdb;
+
+    $where = '';
+
+    if( strtotime($_POST['start_month']) >= strtotime('+1 month', strtotime($_POST['end_month'])) ){
+      $referer = add_query_arg( 'error', 'month', wp_get_referer() );
+      wp_redirect( $referer );
+      exit;
+    }
+
+    if ( ! empty( $_POST['start_month'] ) )
+      $where .= $wpdb->prepare( " AND $wpdb->users.user_registered >= %s", date( 'Y-m-d', strtotime( $_POST['start_month'] ) ) );
+
+    if ( ! empty( $_POST['end_month'] ) )
+      $where .= $wpdb->prepare( " AND $wpdb->users.user_registered < %s", date( 'Y-m-d', strtotime( '+1 month', strtotime( $_POST['end_month'] ) ) ) );
+
+    if ( ! empty( $where ) )
+      $user_search->query_where = str_replace( 'WHERE 1=1', "WHERE 1=1$where", $user_search->query_where );
+
+    return $user_search;
+  }
+
   /** Export months **/
   private function export_date_options() {
     global $wpdb, $wp_locale;
