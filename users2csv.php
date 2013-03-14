@@ -29,6 +29,12 @@ class users_export {
     add_users_page( 'Users2Csv', 'Users2Csv', 'list_users', 'Users2Csv', array( $this, 'users_page' ) );
   }
 
+
+  public function exclude_data() {
+    $exclude = array( 'user_pass', 'user_activation_key' );
+
+    return $exclude;
+  }
   /** Export months **/
   private function export_date_options() {
     global $wpdb, $wp_locale;
