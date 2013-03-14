@@ -29,6 +29,71 @@ class users_export {
     add_users_page( 'Users2Csv', 'Users2Csv', 'list_users', 'Users2Csv', array( $this, 'users_page' ) );
   }
 
+  /** Process content into CSV file **/
+  public function generate_csv() {
+    // Check the POST source
+    if ( isset( $_POST['_wpnonce-export-users-page_export'] ) ) {
+      check_admin_referer( 'export-users-page_export', '_wpnonce-export-users-page_export' );
+      // Get users by Role
+      $args = array(
+        'fields' => 'all_with_meta',
+        'role' => stripslashes( $_POST['role'] )
+      );
+      add_action( 'pre_user_query', array( $this, 'pre_user_query' ) );
+      $users = get_users( $args );
+      remove_action( 'pre_user_query', array( $this, 'pre_user_query' ) );
+      // Error: no matched users
+      if ( ! $users ) {
+        $referer = add_query_arg( 'error', 'empty', wp_get_referer() );
+        wp_redirect( $referer );
+        exit;
+      }
+      // Filename
+      $sitename = sanitize_key( get_bloginfo( 'name' ) );
+      if ( ! empty( $sitename ) )
+        $sitename .= '.';
+      $filename = $sitename . 'users.' . date( 'Y-m-d-H-i-s' ) . '.csv';
+      // Set CSV header
+      header( 'Content-Description: File Transfer' );
+      header( 'Content-Disposition: attachment; filename=' . $filename );
+      header( 'Content-Type: text/csv; charset=' . get_option( 'blog_charset' ), true );
+      $exclude_data = apply_filters( 'u2c_exclude_data', array() );
+
+      global $wpdb;
+      // if Custom Default WP Fields are checked use it else use default set
+      if (isset($_POST['field_default'])) $data_keys = $_POST['field_default'];
+      else $data_keys = array('ID', 'user_login', 'user_pass', 'user_nicename', 'user_email', 'user_registered', 'display_name');
+      // if Custom Additional Metas WP Fields are checked use it else use all
+      if (isset($_POST['field_meta'])) $meta_keys = $_POST['field_meta'];
+      else $meta_keys = wp_list_pluck( $wpdb->get_results( "SELECT distinct(meta_key) FROM $wpdb->usermeta" ), 'meta_key' );
+      // Merge fields list
+      $fields = array_merge( $data_keys, $meta_keys );
+
+      // Headers
+      $headers = array();
+      // Generate CSV fields
+      foreach ( $fields as $key => $field ) {
+        if ( in_array( $field, $exclude_data ) )
+          unset( $fields[$key] );
+        else
+          $headers[] = '"' . $field . '"';
+      }
+      echo implode( ',', $headers ) . "\n";
+
+      foreach ( $users as $user ) {
+        $data = array();
+        foreach ( $fields as $field ) {
+          $value = isset( $user->{$field} ) ? $user->{$field} : '';
+          $value = is_array( $value ) ? serialize( $value ) : $value;
+          $data[] = '"' . str_replace( '"', '""', $value ) . '"';
+        }
+        echo implode( ',', $data ) . "\n";
+      }
+      exit;
+    }
+    
+  }
+
   /** Content of the settings page **/
   public function users_page() {
     if ( ! current_user_can( 'list_users' ) ) wp_die( 'You do not have sufficient permissions to access this page.');
