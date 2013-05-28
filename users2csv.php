@@ -1,13 +1,13 @@
 <?php
 /**
  * @package Users to Csv
- * @version 0.1
+ * @version 0.2
  */
 /*
 Plugin Name: Users to Csv
 Plugin URI: http://github.com/welaika/users2Csv
 Description: Select and export Users data and metadata to a right formatted csv file.
-Version: 0.1
+Version: 0.2
 Author: Mukkoo
 Author URI: http://github.com/mukkoo
 License: GPL2
