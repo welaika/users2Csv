@@ -26,7 +26,7 @@ class users_export {
 
   /** Add backend menu voice **/
   public function add_admin_pages() {
-    add_users_page( 'Export to Csv', 'Export to Csv', 'list_users', 'Export to Csv', array( $this, 'users_page' ) );
+    add_users_page( 'Export to Csv', 'Export to Csv', 'list_users', 'Export-to-Csv', array( $this, 'users_page' ) );
   }
 
   /** Process content into CSV file **/
