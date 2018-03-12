@@ -18,13 +18,13 @@ Visit [Wordpress Tools](http://wptools.it).
 
 ## Author
 
-made with ❤️ and ☕️ by [weLaika](http://dev.welaika.com)
+made with ❤️ and ☕️ by [weLaika](https://dev.welaika.com)
 
 ## License
 
 (The MIT License)
 
-Copyright © 2014 weLaika
+Copyright © 2014-2018 [weLaika](https://dev.welaika.com)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the ‘Software’), to deal in
